@@ -565,9 +565,9 @@ function openModal(id) {
   const imagesEl = document.getElementById('mImages');
   if (p.images && p.images.length) {
     imagesEl.innerHTML = `
-      <div class="modal-section-title">Screen</div>
+      <div class="modal-section-title">screen</div>
       <div class="img-gallery">
-        ${p.images.map((src,i) => `<img src="${src}" alt="Screen ${i+1}" onclick="openLightbox(${p.id},${i})" loading="lazy"/>`).join('')}
+        ${p.images.map((src,i) => `<img src="${src}" alt="screen ${i+1}" onclick="openLightbox(${p.id},${i})" loading="lazy"/>`).join('')}
       </div>`;
   } else {
     imagesEl.innerHTML = '';
