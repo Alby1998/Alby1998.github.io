@@ -1,171 +1,419 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>MCP-UI Proxy</title>
-    <style>
-      html,
-      body {
-        margin: 0;
-        height: 100vh;
-        width: 100vw;
-      }
-      body {
-        display: flex;
-        flex-direction: column;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      iframe {
-        background-color: transparent;
-        border: 0px none transparent;
-        padding: 0px;
-        overflow: hidden;
-        flex-grow: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <script>
-      // Double-iframe raw HTML mode (HTML sent via postMessage)
-      const inner = document.createElement('iframe');
-      inner.style = 'width:100%; height:100%; border:none;';
-      inner.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
-      document.body.appendChild(inner);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alberto Dal Corso — Game Programmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0a0f;
+    --surface:#111118;
+    --border:#1e1e2e;
+    --accent:#00ff88;
+    --accent2:#7c3aed;
+    --text:#e8e8f0;
+    --muted:#6b6b80;
+    --card:#13131c;
+  }
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;overflow-x:hidden}
 
-      let parentOrigin = '*';
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.85);backdrop-filter:blur(12px)}
+  .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent);letter-spacing:-0.02em}
+  .nav-links{display:flex;gap:2rem}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--accent)}
 
-      const ALLOWED_ORIGIN_PATTERNS = ["https://claude.ai","https://preview.claude.ai"];
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 4rem;position:relative;overflow:hidden}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.4}
+  .hero-glow{position:absolute;top:20%;left:60%;width:500px;height:500px;background:radial-gradient(circle,rgba(0,255,136,0.07) 0%,transparent 70%);pointer-events:none}
+  .hero-tag{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;position:relative}
+  .hero-tag::before{content:'';width:2rem;height:1px;background:var(--accent)}
+  .hero-name{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(3rem,8vw,7rem);line-height:0.95;letter-spacing:-0.03em;color:#fff;margin-bottom:1.5rem;position:relative}
+  .hero-name span{color:var(--accent)}
+  .hero-desc{max-width:520px;color:var(--muted);line-height:1.8;font-size:0.85rem;margin-bottom:2.5rem;position:relative}
+  .hero-cta{display:flex;gap:1rem;flex-wrap:wrap;position:relative}
+  .btn{padding:0.75rem 1.75rem;font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.2s;cursor:pointer;border:none;display:inline-block}
+  .btn-primary{background:var(--accent);color:#000;font-weight:700}
+  .btn-primary:hover{background:#00cc6a;transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .hero-stats{display:flex;gap:3rem;margin-top:4rem;padding-top:2rem;border-top:1px solid var(--border);position:relative;flex-wrap:wrap}
+  .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:#fff}
+  .stat-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
 
-      const isAllowedOrigin = function(origin) {
-        try {
-          const url = new URL(origin);
-          const originHost = url.host;
-          const originScheme = url.protocol.replace(':', '');
-          return ALLOWED_ORIGIN_PATTERNS.some(pattern => {
-            const [patternScheme, patternHost] = pattern.split('://');
-            if (originScheme !== patternScheme) return false;
-            if (patternHost === 'localhost:*') {
-              return originHost.startsWith('localhost:') || originHost === 'localhost';
-            }
-            if (patternHost.startsWith('*.')) {
-              const baseDomain = patternHost.slice(2);
-              return originHost === baseDomain || originHost.endsWith('.' + baseDomain);
-            }
-            return originHost === patternHost;
-          });
-        } catch {
-          return false;
-        }
-      };
+  /* SECTIONS */
+  section{padding:5rem 3rem;max-width:1100px;margin:0 auto}
+  .section-tag{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+  .section-tag::before{content:'';width:1.5rem;height:1px;background:var(--accent)}
+  .section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-0.02em;color:#fff;margin-bottom:3rem}
 
-      // Build Permission Policy allow attribute from permissions object.
-      // Maps McpUiResourcePermissions keys to Permission Policy feature names.
-      // Uses '*' suffix for cross-origin permission delegation.
-      //
-      // NOTE: This is duplicated from packages/mcp-ext-apps-host/app-host-utils.ts
-      // because this runs as inline JS in the browser. Keep both in sync!
-      const buildAllowAttribute = function(permissions) {
-        if (!permissions || typeof permissions !== 'object') return '';
-        const mapping = {
-          camera: 'camera',
-          microphone: 'microphone',
-          geolocation: 'geolocation',
-          clipboardWrite: 'clipboard-write',
-        };
-        const features = Object.keys(permissions)
-          .filter(key => mapping[key] && permissions[key] != null)
-          .map(key => mapping[key] + ' *');
-        return features.join('; ');
-      };
+  /* SKILLS */
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
+  .skill-item{background:var(--card);padding:1.5rem;transition:background 0.2s}
+  .skill-item:hover{background:#1a1a25}
+  .skill-cat{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem}
+  .skill-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#fff;margin-bottom:0.5rem}
+  .skill-detail{font-size:0.75rem;color:var(--muted);line-height:1.6}
 
-      // IncrementalJsonParser for healing streamed tool-input deltas.
-      // When the host sends raw JSON text deltas (tool-input-delta), the sandbox
-      // feeds them through this parser and forwards the healed result to the view
-      // as a standard tool-input-partial notification.
-      // Source: packages/utils/incrementalJsonParser.ts (build-time generated, see scripts/build-inline-parser.ts)
-      var T=Object.defineProperty;var m=(h,e,i)=>e in h?T(h,e,{enumerable:!0,configurable:!0,writable:!0,value:i}):h[e]=i;var r=(h,e,i)=>m(h,typeof e!="symbol"?e+"":e,i);var E=(a=>(a[a.NONE=0]="NONE",a[a.STRING=1]="STRING",a[a.STRING_ESCAPE=2]="STRING_ESCAPE",a[a.STRING_UNICODE=3]="STRING_UNICODE",a[a.NUMBER=4]="NUMBER",a[a.LITERAL=5]="LITERAL",a))(E||{}),c=(t=>(t[t.SIGN=0]="SIGN",t[t.INT_ZERO=1]="INT_ZERO",t[t.INT_DIGIT=2]="INT_DIGIT",t[t.FRAC_DOT=3]="FRAC_DOT",t[t.FRAC_DIGIT=4]="FRAC_DIGIT",t[t.EXP_E=5]="EXP_E",t[t.EXP_SIGN=6]="EXP_SIGN",t[t.EXP_DIGIT=7]="EXP_DIGIT",t))(c||{}),P=(t=>(t[t.OBJ_EMPTY=0]="OBJ_EMPTY",t[t.OBJ_VALUE=1]="OBJ_VALUE",t[t.OBJ_AFTER_KEY=2]="OBJ_AFTER_KEY",t[t.OBJ_AFTER_VALUE=3]="OBJ_AFTER_VALUE",t[t.OBJ_AFTER_COMMA=4]="OBJ_AFTER_COMMA",t[t.ARR_EMPTY=10]="ARR_EMPTY",t[t.ARR_AFTER_VALUE=11]="ARR_AFTER_VALUE",t[t.ARR_AFTER_COMMA=12]="ARR_AFTER_COMMA",t))(P||{});function _(h){return h<10}class IncrementalJsonParser{constructor(e){r(this,"raw","");r(this,"rawLength",0);r(this,"stack",[]);r(this,"tokenType",0);r(this,"numPhase",0);r(this,"literalTarget","");r(this,"literalIndex",0);r(this,"unicodeRemaining",0);r(this,"escapeStartPos",0);r(this,"numberStartPos",0);r(this,"trailingCommaIndex",-1);r(this,"currentPos",0);r(this,"complete",!1);r(this,"healedCache",null);r(this,"onUpdateCb");r(this,"onCompleteCb");this.onUpdateCb=e?.onUpdate??null,this.onCompleteCb=e?.onComplete??null}get onUpdate(){return this.onUpdateCb}set onUpdate(e){this.onUpdateCb=e}get onComplete(){return this.onCompleteCb}set onComplete(e){this.onCompleteCb=e}write(e){if(this.complete||e.length===0)return;const i=this.rawLength;let s=e.length;for(let a=0;a<e.length;a++){if(this.complete){s=a;break}const n=e[a],t=i+a;switch(this.currentPos=t,this.tokenType){case 1:this.processStringChar(n);break;case 2:this.processStringEscapeChar(n);break;case 3:this.processStringUnicodeChar(n);break;case 4:this.processNumberChar(n)||(this.endNumber(),a--);break;case 5:this.processLiteralChar(n)||(this.endLiteral(),a--);break;case 0:this.processStructuralChar(n,t);break}}s===e.length?this.raw+=e:s>0&&(this.raw+=e.substring(0,s)),this.rawLength+=s;const l=this.healedCache;this.healedCache=null;const u=this.getHealed();u!==l&&this.onUpdateCb&&this.onUpdateCb(u),this.complete&&this.onCompleteCb&&this.onCompleteCb(this.raw)}getHealed(){if(this.healedCache!==null)return this.healedCache;if(this.complete)return this.healedCache=this.raw,this.raw;if(this.rawLength===0)return this.healedCache="","";const e=this.stack.length>0?this.stack[this.stack.length-1]:null,i=e&&(e.phase===0||e.phase===4),s=e&&(i&&this.tokenType!==0||this.tokenType===0&&(e.phase===2||e.phase===1)),l=this.tokenType===4&&!this.isTerminalNumberPhase()&&!s,u=l?this.numberStartPos+this.validNumberPrefixLength():-1,a=l&&u<=this.numberStartPos,n=(this.tokenType===2||this.tokenType===3)&&!s;let t;s?t=this.raw.substring(0,e.lastEntryEnd):a?t=e?this.raw.substring(0,e.lastEntryEnd):"":l?t=this.raw.substring(0,u):n?t=this.raw.substring(0,this.escapeStartPos):this.trailingCommaIndex>=0&&this.tokenType===0?t=this.raw.substring(0,this.trailingCommaIndex):t=this.raw;let o="";if(n)o+='"';else if(!s&&!a&&!l)switch(this.tokenType){case 1:o+='"';break;case 2:case 3:break;case 4:o+=this.healNumberSuffix();break;case 5:o+=this.literalTarget.substring(this.literalIndex);break;case 0:break}for(let p=this.stack.length-1;p>=0;p--)o+=_(this.stack[p].phase)?"}":"]";return this.healedCache=t+o,this.healedCache}getRaw(){return this.raw}get isComplete(){return this.complete}get depth(){return this.stack.length}end(){this.complete||(this.stack.length===0&&(this.tokenType===4?this.endNumber():this.tokenType===5&&this.endLiteral()),this.complete&&this.onCompleteCb&&this.onCompleteCb(this.raw))}reset(){this.raw="",this.rawLength=0,this.stack.length=0,this.tokenType=0,this.numPhase=0,this.literalTarget="",this.literalIndex=0,this.unicodeRemaining=0,this.escapeStartPos=0,this.numberStartPos=0,this.trailingCommaIndex=-1,this.currentPos=0,this.complete=!1,this.healedCache=null}processStringChar(e){e==='"'?(this.tokenType=0,this.stringCompleted()):e==="\\"&&(this.tokenType=2,this.escapeStartPos=this.currentPos)}processStringEscapeChar(e){e==="u"?(this.tokenType=3,this.unicodeRemaining=4):this.tokenType=1}processStringUnicodeChar(e){this.unicodeRemaining--,this.unicodeRemaining===0&&(this.tokenType=1)}stringCompleted(){if(this.stack.length===0){this.complete=!0;return}const e=this.stack[this.stack.length-1];switch(e.phase){case 0:case 4:e.phase=2;break;case 1:e.phase=3,e.lastEntryEnd=this.currentPos+1;break;case 10:case 12:e.phase=11,e.lastEntryEnd=this.currentPos+1;break}}processNumberChar(e){switch(this.numPhase){case 0:return e==="0"?(this.numPhase=1,!0):e>="1"&&e<="9"?(this.numPhase=2,!0):!1;case 1:return e==="."?(this.numPhase=3,!0):e==="e"||e==="E"?(this.numPhase=5,!0):!1;case 2:return e>="0"&&e<="9"?!0:e==="."?(this.numPhase=3,!0):e==="e"||e==="E"?(this.numPhase=5,!0):!1;case 3:return e>="0"&&e<="9"?(this.numPhase=4,!0):!1;case 4:return e>="0"&&e<="9"?!0:e==="e"||e==="E"?(this.numPhase=5,!0):!1;case 5:return e==="+"||e==="-"?(this.numPhase=6,!0):e>="0"&&e<="9"?(this.numPhase=7,!0):!1;case 6:return e>="0"&&e<="9"?(this.numPhase=7,!0):!1;case 7:return e>="0"&&e<="9"}}endNumber(){this.tokenType=0,(this.numPhase===1||this.numPhase===2||this.numPhase===4||this.numPhase===7)&&this.valueCompleted(this.currentPos)}isTerminalNumberPhase(){return this.numPhase===1||this.numPhase===2||this.numPhase===4||this.numPhase===7}healNumberSuffix(){return""}validNumberPrefixLength(){const e=this.rawLength-this.numberStartPos;switch(this.numPhase){case 0:return 0;case 3:return e-1;case 5:return e-1;case 6:return e-2;default:return e}}processLiteralChar(e){return e===this.literalTarget[this.literalIndex]?(this.literalIndex++,this.literalIndex===this.literalTarget.length&&this.endLiteral(),!0):!1}endLiteral(){this.tokenType=0,this.literalIndex===this.literalTarget.length&&this.valueCompleted(this.currentPos+1)}processStructuralChar(e,i){if(!(e===" "||e==="	"||e===`
-`||e==="\r"))switch(e){case"{":this.clearTrailingComma(),this.stack.push({phase:0,lastEntryEnd:i+1});break;case"[":this.clearTrailingComma(),this.stack.push({phase:10,lastEntryEnd:i+1});break;case"}":{const s=this.topFrame();s&&(s.phase===0||s.phase===3)&&(this.stack.pop(),this.valueCompleted(i+1));break}case"]":{const s=this.topFrame();s&&(s.phase===10||s.phase===11)&&(this.stack.pop(),this.valueCompleted(i+1));break}case":":{const s=this.topFrame();s&&s.phase===2&&(s.phase=1);break}case",":{const s=this.topFrame();s&&(s.phase===3?s.phase=4:s.phase===11&&(s.phase=12),this.trailingCommaIndex=i);break}case'"':this.clearTrailingComma(),this.tokenType=1;break;default:if(e==="-"||e>="0"&&e<="9"){this.clearTrailingComma(),this.tokenType=4,this.numberStartPos=i,e==="-"?this.numPhase=0:e==="0"?this.numPhase=1:this.numPhase=2;break}e==="t"?(this.clearTrailingComma(),this.tokenType=5,this.literalTarget="true",this.literalIndex=1):e==="f"?(this.clearTrailingComma(),this.tokenType=5,this.literalTarget="false",this.literalIndex=1):e==="n"&&(this.clearTrailingComma(),this.tokenType=5,this.literalTarget="null",this.literalIndex=1);break}}topFrame(){return this.stack.length>0?this.stack[this.stack.length-1]:null}clearTrailingComma(){this.trailingCommaIndex>=0&&(this.trailingCommaIndex=-1)}valueCompleted(e){if(this.stack.length===0){this.complete=!0;return}const i=this.stack[this.stack.length-1];switch(i.phase){case 1:i.phase=3,i.lastEntryEnd=e;break;case 10:case 12:i.phase=11,i.lastEntryEnd=e;break}}}
+  /* PROJECTS */
+  .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
+  .project-card{background:var(--card);padding:2rem;position:relative;transition:background 0.2s;overflow:hidden}
+  .project-card:hover{background:#1a1a25}
+  .project-type{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem}
+  .project-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin-bottom:0.75rem;line-height:1.2}
+  .project-desc{font-size:0.78rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+  .project-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+  .tag{font-size:0.65rem;padding:0.3rem 0.7rem;border:1px solid var(--border);color:var(--muted);letter-spacing:0.05em;border-radius:1px}
+  .project-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--border);position:absolute;bottom:1rem;right:1.5rem;line-height:1;pointer-events:none}
 
-      const jsonParser = new IncrementalJsonParser();
+  /* EXPERIENCE */
+  .exp-list{display:flex;flex-direction:column;gap:0}
+  .exp-item{padding:2rem 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:200px 1fr;gap:2rem}
+  .exp-period{font-size:0.72rem;color:var(--muted);letter-spacing:0.05em;padding-top:0.25rem}
+  .exp-role{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:#fff;margin-bottom:0.25rem}
+  .exp-company{font-size:0.8rem;color:var(--accent);margin-bottom:0.75rem}
+  .exp-bullets{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+  .exp-bullets li{font-size:0.78rem;color:var(--muted);line-height:1.6;padding-left:1.2em;position:relative}
+  .exp-bullets li::before{content:'→';position:absolute;left:0;color:var(--accent)}
 
-      // Handle messages from the parent (web: claude.ai via postMessage, mobile: native app via mcpAppBridgeReceive).
-      // onHandshake is called once during sandbox-resource-ready to lock in the parent origin (web only).
-      const handleParentMessage = function(data, onHandshake) {
-        if (data && data.method === 'ui/notifications/sandbox-resource-ready') {
-          const {html, permissions} = data.params;
-          if (typeof html === 'string') {
-            if (onHandshake) onHandshake();
-            // Set allow attribute for Permission Policy features
-            const allowValue = buildAllowAttribute(permissions);
-            if (allowValue) {
-              inner.setAttribute('allow', allowValue);
-            }
+  /* EDUCATION */
+  .edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
+  .edu-card{background:var(--card);padding:1.75rem}
+  .edu-year{font-size:0.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem}
+  .edu-school{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#fff;margin-bottom:0.3rem}
+  .edu-degree{font-size:0.78rem;color:var(--muted);line-height:1.6}
+  .edu-badge{display:inline-block;margin-top:0.75rem;font-size:0.65rem;padding:0.25rem 0.6rem;border:1px solid var(--accent);color:var(--accent)}
 
-            // Use document.write() instead of srcdoc to preserve origin.
-            // srcdoc creates an opaque origin that breaks WebGL canvas operations
-            // like toDataURL() and cross-origin resource access.
-            const doc = inner.contentDocument;
-            doc.open();
-            doc.write(html);
-            doc.close();
-          }
-        } else if (data && data.method === 'ui/notifications/tool-input-delta') {
-          // Host sends raw JSON text deltas — heal and forward as tool-input-partial.
-          // The view never sees tool-input-delta; it sees the specced tool-input-partial.
-          const delta = data.params && data.params.delta;
-          if (typeof delta === 'string' && delta.length > 0) {
-            jsonParser.write(delta);
-            const healed = jsonParser.getHealed();
-            let args;
-            try {
-              args = JSON.parse(healed);
-            } catch {
-              console.error('[mcp_apps] healed tool-input-delta did not parse');
-              return;
-            }
-            if (typeof args !== 'object' || args === null) {
-              console.error('[mcp_apps] healed tool-input-delta was not an object');
-              return;
-            }
-            if (inner && inner.contentWindow) {
-              inner.contentWindow.postMessage({
-                jsonrpc: '2.0',
-                method: 'ui/notifications/tool-input-partial',
-                params: { arguments: args },
-              }, location.origin);
-            }
-          }
-        } else {
-          if (data && data.method === 'ui/notifications/tool-input') {
-            jsonParser.reset();
-          }
-          if (inner && inner.contentWindow) {
-            inner.contentWindow.postMessage(data, location.origin);
-          }
-        }
-      };
+  /* CONTACT */
+  .contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+  .contact-big{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,4rem);line-height:1;color:#fff;margin-bottom:1.5rem}
+  .contact-big span{color:var(--accent)}
+  .contact-sub{font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:2rem}
+  .contact-links{display:flex;flex-direction:column;gap:1rem}
+  .contact-link{display:flex;align-items:center;gap:1rem;text-decoration:none;color:var(--text);font-size:0.82rem;padding:1rem;border:1px solid var(--border);transition:all 0.2s}
+  .contact-link:hover{border-color:var(--accent);color:var(--accent)}
+  .contact-link-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:block;margin-bottom:0.15rem}
 
-      // Wait for HTML content from parent
-      window.addEventListener('message', async (event) => {
-        if (event.source === window.parent && isAllowedOrigin(event.origin)) {
-          handleParentMessage(event.data, function() { parentOrigin = event.origin; });
-        } else if (event.source === inner.contentWindow && event.origin === location.origin) {
-          // Relay messages from inner to parent (srcdoc + allow-same-origin = same origin as parent)
-          window.parent.postMessage(event.data, parentOrigin);
-        }
-      });
+  /* FOOTER */
+  footer{border-top:1px solid var(--border);padding:2rem 3rem;display:flex;justify-content:space-between;align-items:center}
+  footer p{font-size:0.72rem;color:var(--muted)}
 
-      // Notify parent that proxy is ready to receive HTML (distinct event)
-      window.parent.postMessage({
-        jsonrpc: "2.0",
-        method: 'ui/notifications/sandbox-proxy-ready',
-        params: {}
-      }, '*');
+  .divider{width:100%;height:1px;background:var(--border);margin:0}
 
-    </script>
-  </body>
+  @media(max-width:700px){
+    nav .nav-links{display:none}
+    .hero{padding:7rem 1.5rem 3rem}
+    section{padding:4rem 1.5rem}
+    .exp-item{grid-template-columns:1fr}
+    .contact-inner{grid-template-columns:1fr}
+    footer{flex-direction:column;gap:1rem;text-align:center}
+    .hero-stats{gap:2rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">ADC</div>
+  <div class="nav-links">
+    <a href="#projects">Projects</a>
+    <a href="#experience">Experience</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag">Available for opportunities</div>
+  <h1 class="hero-name">Alberto<br/>Dal<span> Corso</span></h1>
+  <p class="hero-desc">Computer Games Programmer with 3+ years of industry experience. Specialized in Unreal Engine, C++, and AI systems. BSc Computer Games Development — University of Westminster.</p>
+  <div class="hero-cta">
+    <a href="mailto:dalcorsoalberto@gmail.com" class="btn btn-primary">Get In Touch</a>
+    <a href="#projects" class="btn btn-ghost">View Projects</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">3+</div>
+      <div class="stat-label">Years Experience</div>
+    </div>
+    <div>
+      <div class="stat-num">8</div>
+      <div class="stat-label">Projects Shipped</div>
+    </div>
+    <div>
+      <div class="stat-num">4</div>
+      <div class="stat-label">Game Jams</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-tag">Work</div>
+  <h2 class="section-title">Projects</h2>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-type">Portfolio Project</div>
+      <h3 class="project-title">Octonaut</h3>
+      <p class="project-desc">A game built with MonoGame using C#. Developed as part of university coursework showcasing game engine fundamentals and system architecture.</p>
+      <div class="project-tags">
+        <span class="tag">MonoGame</span><span class="tag">C#</span><span class="tag">Game Architecture</span>
+      </div>
+      <span class="project-num">01</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Portfolio Project</div>
+      <h3 class="project-title">LowLand</h3>
+      <p class="project-desc">University portfolio project exploring advanced game mechanics and level design principles built during the final year of study.</p>
+      <div class="project-tags">
+        <span class="tag">Level Design</span><span class="tag">Game Mechanics</span>
+      </div>
+      <span class="project-num">02</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Portfolio Project</div>
+      <h3 class="project-title">Blood Rush</h3>
+      <p class="project-desc">A fast-paced action game developed as part of the university portfolio, demonstrating combat systems and responsive player mechanics.</p>
+      <div class="project-tags">
+        <span class="tag">Combat Systems</span><span class="tag">Player Mechanics</span>
+      </div>
+      <span class="project-num">03</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Jamfuser 2020 — Winner 🏆</div>
+      <h3 class="project-title">Leap</h3>
+      <p class="project-desc">Winner of Jamfuser 2020 and sponsored by Tranzfuser for full development. An Adventure-Platformer with a unique art style and innovative mechanics that challenge the player's perception.</p>
+      <div class="project-tags">
+        <span class="tag">Adventure-Platformer</span><span class="tag">Tranzfuser</span><span class="tag">Team Project</span>
+      </div>
+      <span class="project-num">04</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Global Game Jam 2020</div>
+      <h3 class="project-title">Antibot</h3>
+      <p class="project-desc">Made in Global Game Jam 2020 around the theme "Repair". Players repair blood cells in the human body before they damage the system — a frantic co-op survival experience.</p>
+      <div class="project-tags">
+        <span class="tag">Game Jam</span><span class="tag">Co-op</span><span class="tag">Theme: Repair</span>
+      </div>
+      <span class="project-num">05</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Ukie Green Game Jam 2019</div>
+      <h3 class="project-title">Forest Guardian</h3>
+      <p class="project-desc">Theme: Climate Change. Players protect the forest by disposing garbage using the spirit of the forest, avoiding capture in a stealth-focused environmental game.</p>
+      <div class="project-tags">
+        <span class="tag">Game Jam</span><span class="tag">Stealth</span><span class="tag">Environment</span>
+      </div>
+      <span class="project-num">06</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Westminster Game Jam 2019 — Most Appreciated</div>
+      <h3 class="project-title">Urilux</h3>
+      <p class="project-desc">Most appreciated game of the Westminster Game Jam. Theme: "Cooperation and collusion". A co-op game where you must help your enemy to complete the level together.</p>
+      <div class="project-tags">
+        <span class="tag">Game Jam</span><span class="tag">Co-op</span><span class="tag">NeoStar</span>
+      </div>
+      <span class="project-num">07</span>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Ukie Game Jam 2018</div>
+      <h3 class="project-title">Top Down</h3>
+      <p class="project-desc">Theme: Change. A hyper-casual looking game full of effects and frustrations where the core mechanic is changing the gravity of the world to progress through levels.</p>
+      <div class="project-tags">
+        <span class="tag">Game Jam</span><span class="tag">Physics</span><span class="tag">Gravity Mechanic</span>
+      </div>
+      <span class="project-num">08</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-tag">Career</div>
+  <h2 class="section-title">Experience</h2>
+  <div class="exp-list">
+    <div class="exp-item">
+      <div class="exp-period">March 2021 — Present</div>
+      <div>
+        <div class="exp-role">Lead &amp; Co-Programmer</div>
+        <div class="exp-company">Goplay Universal</div>
+        <ul class="exp-bullets">
+          <li>Professional development with Unreal Engine on live projects</li>
+          <li>Managing repositories using Git and SVN workflows</li>
+          <li>Working as sole programmer, developing strong problem-solving and critical thinking skills</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item">
+      <div class="exp-period">June 2020 — February 2021</div>
+      <div>
+        <div class="exp-role">Lead Programmer</div>
+        <div class="exp-company">Fat Pigeon Games</div>
+        <ul class="exp-bullets">
+          <li>Led a team of programmers with task delegation using Agile methodology</li>
+          <li>Applied SWOT analysis to understand team strengths and weaknesses</li>
+          <li>Managed sprint planning and cross-team communication</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item">
+      <div class="exp-period">June 2016 — August 2016</div>
+      <div>
+        <div class="exp-role">Warehouse Assistant</div>
+        <div class="exp-company">Redoro S.r.l Frantoi Veneti</div>
+        <ul class="exp-bullets">
+          <li>Time management to maximize production process efficiency</li>
+          <li>Teamwork to consistently meet deadlines</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-tag">Technical</div>
+  <h2 class="section-title">Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-item">
+      <div class="skill-cat">Game Engines</div>
+      <div class="skill-name">Unreal Engine 4</div>
+      <div class="skill-detail">Primary engine — 3+ years professional experience</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Game Engines</div>
+      <div class="skill-name">Unity</div>
+      <div class="skill-detail">Game and prototype development</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Game Engines</div>
+      <div class="skill-name">MonoGame / OpenGL</div>
+      <div class="skill-detail">Low-level graphics and engine fundamentals</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Languages</div>
+      <div class="skill-name">C++ / C#</div>
+      <div class="skill-detail">Primary languages for game programming</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Languages</div>
+      <div class="skill-name">Visual Basic / COBOL</div>
+      <div class="skill-detail">Additional programming experience</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Tools</div>
+      <div class="skill-name">Git / SVN</div>
+      <div class="skill-detail">Version control in professional environments</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">3D &amp; Design</div>
+      <div class="skill-name">Maya / 3DS Max</div>
+      <div class="skill-detail">3D modeling for game assets</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Mobile</div>
+      <div class="skill-name">Android Studio</div>
+      <div class="skill-detail">Mobile application development</div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-cat">Methodology</div>
+      <div class="skill-name">Agile / Scrum</div>
+      <div class="skill-detail">Team lead experience with Agile workflows</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EDUCATION -->
+<section>
+  <div class="section-tag">Education</div>
+  <h2 class="section-title">Background</h2>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-year">2019 – 2020</div>
+      <div class="edu-school">University of Westminster</div>
+      <div class="edu-degree">BSc (Hons) Computer Games Development — Final Year<br/>Game AI, Networked Games, Advanced Media Development, Final Year Project</div>
+      <span class="edu-badge">First Class Honours</span>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2018 – 2019</div>
+      <div class="edu-school">University of Westminster</div>
+      <div class="edu-degree">BSc (Hons) Computer Games Development — Year 2<br/>3D Graphics, Game Engine Architecture, Applied Maths &amp; Physics, OOP</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2017 – 2018</div>
+      <div class="edu-school">University of Westminster</div>
+      <div class="edu-degree">BSc (Hons) Computer Games Development — Year 1<br/>Programming Principles (90%), Maths, Web Design</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2012 – 2017</div>
+      <div class="edu-school">I.I.S.S. Copernico-Pasoli</div>
+      <div class="edu-degree">Economy &amp; Computer Science — Verona, Italy<br/>CISCO Networking Academy · European Computer Driving Licence (ECDL)</div>
+      <span class="edu-badge">Esame di Stato: 100/100</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-tag">Let's work together</div>
+      <h2 class="contact-big">Get in<br/><span>touch.</span></h2>
+      <p class="contact-sub">Open to new opportunities in game programming. Relocation can be discussed. Based in Verona, Italy.</p>
+      <a href="mailto:dalcorsoalberto@gmail.com" class="btn btn-primary">dalcorsoalberto@gmail.com</a>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:dalcorsoalberto@gmail.com" class="contact-link">
+        <div>
+          <span class="contact-link-label">Email</span>
+          dalcorsoalberto@gmail.com
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/alberto-dal-corso" class="contact-link" target="_blank">
+        <div>
+          <span class="contact-link-label">LinkedIn</span>
+          alberto-dal-corso
+        </div>
+      </a>
+      <a href="tel:+393489110900" class="contact-link">
+        <div>
+          <span class="contact-link-label">Mobile</span>
+          +39 348 911 0900
+        </div>
+      </a>
+      <div class="contact-link" style="cursor:default">
+        <div>
+          <span class="contact-link-label">Location</span>
+          Grezzana, Verona — Italy
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Alberto Dal Corso</p>
+  <p>Computer Games Programmer · Verona, Italy</p>
+</footer>
+
+</body>
 </html>
