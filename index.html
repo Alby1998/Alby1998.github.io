@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Alberto Dal Corso — Game Programmer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   :root{
@@ -19,7 +19,7 @@
     --card:#13131c;
   }
   html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;overflow-x:hidden}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;overflow-x:hidden}
 
   /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.85);backdrop-filter:blur(12px)}
@@ -38,7 +38,7 @@
   .hero-name span{color:var(--accent)}
   .hero-desc{max-width:520px;color:var(--muted);line-height:1.8;font-size:0.85rem;margin-bottom:2.5rem;position:relative}
   .hero-cta{display:flex;gap:1rem;flex-wrap:wrap;position:relative}
-  .btn{padding:0.75rem 1.75rem;font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.2s;cursor:pointer;border:none;display:inline-block}
+  .btn{padding:0.75rem 1.75rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.2s;cursor:pointer;border:none;display:inline-block}
   .btn-primary{background:var(--accent);color:#000;font-weight:700}
   .btn-primary:hover{background:#00cc6a;transform:translateY(-2px)}
   .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
@@ -246,40 +246,43 @@
   <h2 class="section-title">Experience</h2>
   <div class="exp-list">
     <div class="exp-item">
-      <div class="exp-period">March 2021 — Present</div>
+      <div class="exp-period">06/2024 — Present<br/><span style="color:var(--muted);font-size:0.7rem">Italy (Remote)</span></div>
       <div>
-        <div class="exp-role">Lead &amp; Co-Programmer</div>
+        <div class="exp-role">Coding Teacher</div>
+        <div class="exp-company">Coding Giants Italia</div>
+        <ul class="exp-bullets">
+          <li>Teaching children how to create video games during camps using Scratch, Minecraft Education, Tynker and MCreator</li>
+          <li>Strengthened communication skills and patience by explaining complex concepts clearly and accessibly</li>
+        </ul>
+      </div>
+    </div>
+	
+	<div class="exp-item">
+      <div class="exp-period">03/2021 — Present<br/><span style="color:var(--muted);font-size:0.7rem">Australia (Remote)</span></div>
+      <div>
+        <div class="exp-role">UI &amp; Gameplay Developer</div>
         <div class="exp-company">Goplay Universal</div>
         <ul class="exp-bullets">
-          <li>Professional development with Unreal Engine on live projects</li>
-          <li>Managing repositories using Git and SVN workflows</li>
-          <li>Working as sole programmer, developing strong problem-solving and critical thinking skills</li>
+          <li>UI screens and gameplay features for PC and Mobile games (PvE and PvP)</li>
+          <li>Server-Client connection implementation</li>
+          <li>Development across both PC and mobile platforms</li>
         </ul>
       </div>
     </div>
+	
     <div class="exp-item">
-      <div class="exp-period">June 2020 — February 2021</div>
+      <div class="exp-period">06/2020 — 02/2021<br/><span style="color:var(--muted);font-size:0.7rem">London</span></div>
       <div>
-        <div class="exp-role">Lead Programmer</div>
+        <div class="exp-role">Unreal Engine Programmer</div>
         <div class="exp-company">Fat Pigeon Games</div>
         <ul class="exp-bullets">
-          <li>Led a team of programmers with task delegation using Agile methodology</li>
-          <li>Applied SWOT analysis to understand team strengths and weaknesses</li>
-          <li>Managed sprint planning and cross-team communication</li>
+          <li>Team management using Figma, Prefab, Miro, Confluence and Jira</li>
+          <li>Source control via TortoiseSVN and OpenVPN</li>
+          <li>Development of PC and mobile games</li>
         </ul>
       </div>
     </div>
-    <div class="exp-item">
-      <div class="exp-period">June 2016 — August 2016</div>
-      <div>
-        <div class="exp-role">Warehouse Assistant</div>
-        <div class="exp-company">Redoro S.r.l Frantoi Veneti</div>
-        <ul class="exp-bullets">
-          <li>Time management to maximize production process efficiency</li>
-          <li>Teamwork to consistently meet deadlines</li>
-        </ul>
-      </div>
-    </div>
+    
   </div>
 </section>
 
@@ -346,25 +349,15 @@
   <h2 class="section-title">Background</h2>
   <div class="edu-grid">
     <div class="edu-card">
-      <div class="edu-year">2019 – 2020</div>
+      <div class="edu-year">09/2017 – 06/2020 · London</div>
       <div class="edu-school">University of Westminster</div>
-      <div class="edu-degree">BSc (Hons) Computer Games Development — Final Year<br/>Game AI, Networked Games, Advanced Media Development, Final Year Project</div>
+      <div class="edu-degree">BSc (Hons) Computer Games Development<br/>Game AI · Networked Games · Game Engine Architecture · 3D Graphics · Advanced Media Development</div>
       <span class="edu-badge">First Class Honours</span>
     </div>
     <div class="edu-card">
-      <div class="edu-year">2018 – 2019</div>
-      <div class="edu-school">University of Westminster</div>
-      <div class="edu-degree">BSc (Hons) Computer Games Development — Year 2<br/>3D Graphics, Game Engine Architecture, Applied Maths &amp; Physics, OOP</div>
-    </div>
-    <div class="edu-card">
-      <div class="edu-year">2017 – 2018</div>
-      <div class="edu-school">University of Westminster</div>
-      <div class="edu-degree">BSc (Hons) Computer Games Development — Year 1<br/>Programming Principles (90%), Maths, Web Design</div>
-    </div>
-    <div class="edu-card">
-      <div class="edu-year">2012 – 2017</div>
-      <div class="edu-school">I.I.S.S. Copernico-Pasoli</div>
-      <div class="edu-degree">Economy &amp; Computer Science — Verona, Italy<br/>CISCO Networking Academy · European Computer Driving Licence (ECDL)</div>
+      <div class="edu-year">09/2012 – 06/2017 · Verona, Italy</div>
+      <div class="edu-school">I.I.S.S. "Copernico-Pasoli"</div>
+      <div class="edu-degree">Economy &amp; Computer Science<br/>CISCO Networking Academy · European Computer Driving Licence (ECDL)</div>
       <span class="edu-badge">Esame di Stato: 100/100</span>
     </div>
   </div>
