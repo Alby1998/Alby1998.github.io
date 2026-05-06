@@ -63,7 +63,7 @@
 
   /* PROJECTS */
   .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
-  .project-card{background:var(--card);padding:2rem;position:relative;transition:background 0.2s;overflow:hidden}
+  .project-card{background:var(--card);padding:2rem;padding-bottom:4rem;position:relative;transition:background 0.2s;overflow:hidden;cursor:pointer}
   .project-card:hover{background:#1a1a25}
   .project-type{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem}
   .project-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin-bottom:0.75rem;line-height:1.2}
@@ -71,6 +71,34 @@
   .project-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
   .tag{font-size:0.65rem;padding:0.3rem 0.7rem;border:1px solid var(--border);color:var(--muted);letter-spacing:0.05em;border-radius:1px}
   .project-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--border);position:absolute;bottom:1rem;right:1.5rem;line-height:1;pointer-events:none}
+  /* PROJECT MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(6px)}
+  .modal-overlay.open{opacity:1;pointer-events:all}
+  .modal{background:var(--card);border:1px solid var(--border);max-width:680px;width:100%;max-height:90vh;overflow-y:auto;position:relative;padding:2.5rem}
+  .modal-close{position:absolute;top:1.25rem;right:1.25rem;background:none;border:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.75rem;padding:0.4rem 0.75rem;cursor:pointer;transition:all 0.2s}
+  .modal-close:hover{border-color:var(--accent);color:var(--accent)}
+  .modal-type{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem}
+  .modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:#fff;margin-bottom:1rem;line-height:1.1}
+  .modal-meta{display:flex;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .modal-meta-item{font-size:0.72rem;color:var(--muted)}
+  .modal-meta-item span{color:var(--text)}
+  .modal-desc{font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1.5rem}
+  .modal-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;color:#fff;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem;margin-top:1.5rem}
+  .modal-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem}
+  .modal-links{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap}
+  /* IMAGE GALLERY */
+  .img-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin-bottom:1.5rem}
+  .img-gallery img{width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:opacity 0.2s}
+  .img-gallery img:hover{opacity:0.8}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
+  .lightbox.open{opacity:1;pointer-events:all}
+  .lightbox img{max-width:100%;max-height:90vh;object-fit:contain;border:1px solid var(--border)}
+  .lightbox-close{position:absolute;top:1.5rem;right:1.5rem;background:none;border:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.75rem;padding:0.4rem 0.75rem;cursor:pointer}
+  .lightbox-close:hover{border-color:var(--accent);color:var(--accent)}
+  .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:none;border:1px solid var(--border);color:var(--text);font-size:1.2rem;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s}
+  .lightbox-nav:hover{border-color:var(--accent);color:var(--accent)}
+  .lightbox-prev{left:1.5rem}
+  .lightbox-next{right:1.5rem}
 
   /* EXPERIENCE */
   .exp-list{display:flex;flex-direction:column;gap:0}
@@ -163,43 +191,34 @@
   <div class="section-tag">Work</div>
   <h2 class="section-title">Projects</h2>
   <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-type">Portfolio Project</div>
+    <div class="project-card" onclick="openModal(1)">
+      <div class="project-type">Game Group Project I · Steam Release 🎮</div>
       <h3 class="project-title">Octonaut</h3>
-      <p class="project-desc">A game built with MonoGame using C#. Developed as part of university coursework showcasing game engine fundamentals and system architecture.</p>
+      <p class="project-desc">2D scrolling shooter built with MonoGame/C#. Released on Steam as Takotan. 7 unique enemy types, wave system, boss fight.</p>
       <div class="project-tags">
-        <span class="tag">MonoGame</span><span class="tag">C#</span><span class="tag">Game Architecture</span>
+        <span class="tag">MonoGame</span><span class="tag">C#</span><span class="tag">Steam</span><span class="tag">Lead Programmer</span>
       </div>
       <span class="project-num">01</span>
-    </div>
-    <div class="project-card">
-      <div class="project-type">Portfolio Project</div>
-      <h3 class="project-title">LowLand</h3>
-      <p class="project-desc">University portfolio project exploring advanced game mechanics and level design principles built during the final year of study.</p>
-      <div class="project-tags">
-        <span class="tag">Level Design</span><span class="tag">Game Mechanics</span>
-      </div>
-      <span class="project-num">02</span>
-    </div>
-    <div class="project-card">
-      <div class="project-type">Portfolio Project</div>
+    </div>   
+    <div class="project-card" onclick="openModal(3)">
+      <div class="project-type">Game Group Project III · VR</div>
       <h3 class="project-title">Blood Rush</h3>
-      <p class="project-desc">A fast-paced action game developed as part of the university portfolio, demonstrating combat systems and responsive player mechanics.</p>
+      <p class="project-desc">VR wave shooter in Unreal Engine 4. Your ammo is your blood. Drain enemies with a dagger, block projectiles with a shield. 3 unique AI enemy types.</p>
       <div class="project-tags">
-        <span class="tag">Combat Systems</span><span class="tag">Player Mechanics</span>
+        <span class="tag">Unreal Engine 4</span><span class="tag">C++</span><span class="tag">VR</span><span class="tag">AI</span>
       </div>
       <span class="project-num">03</span>
     </div>
-    <div class="project-card">
-      <div class="project-type">Jamfuser 2020 — Winner 🏆</div>
+    <div class="project-card" onclick="openModal(4)">
+      <div class="project-type">Tranzfuser 2020 — Sponsored 🏆</div>
       <h3 class="project-title">Leap</h3>
-      <p class="project-desc">Winner of Jamfuser 2020 and sponsored by Tranzfuser for full development. An Adventure-Platformer with a unique art style and innovative mechanics that challenge the player's perception.</p>
+      <p class="project-desc">Adventure-Platformer sponsored by Tranzfuser. Place platforms with a special weapon to build your own path. Leaderboard system ensures replayability.</p>
       <div class="project-tags">
-        <span class="tag">Adventure-Platformer</span><span class="tag">Tranzfuser</span><span class="tag">Team Project</span>
+        <span class="tag">Unreal Engine 4</span><span class="tag">C++</span><span class="tag">Tranzfuser</span><span class="tag">Lead Programmer</span>
       </div>
       <span class="project-num">04</span>
     </div>
-    <div class="project-card">
+    <div class="project-card" onclick="openModal(5)">
       <div class="project-type">Global Game Jam 2020</div>
       <h3 class="project-title">Antibot</h3>
       <p class="project-desc">Made in Global Game Jam 2020 around the theme "Repair". Players repair blood cells in the human body before they damage the system — a frantic co-op survival experience.</p>
@@ -208,7 +227,7 @@
       </div>
       <span class="project-num">05</span>
     </div>
-    <div class="project-card">
+    <div class="project-card" onclick="openModal(6)">
       <div class="project-type">Ukie Green Game Jam 2019</div>
       <h3 class="project-title">Forest Guardian</h3>
       <p class="project-desc">Theme: Climate Change. Players protect the forest by disposing garbage using the spirit of the forest, avoiding capture in a stealth-focused environmental game.</p>
@@ -217,7 +236,7 @@
       </div>
       <span class="project-num">06</span>
     </div>
-    <div class="project-card">
+    <div class="project-card" onclick="openModal(7)">
       <div class="project-type">Westminster Game Jam 2019 — Most Appreciated</div>
       <h3 class="project-title">Urilux</h3>
       <p class="project-desc">Most appreciated game of the Westminster Game Jam. Theme: "Cooperation and collusion". A co-op game where you must help your enemy to complete the level together.</p>
@@ -226,7 +245,7 @@
       </div>
       <span class="project-num">07</span>
     </div>
-    <div class="project-card">
+    <div class="project-card" onclick="openModal(8)">
       <div class="project-type">Ukie Game Jam 2018</div>
       <h3 class="project-title">Top Down</h3>
       <p class="project-desc">Theme: Change. A hyper-casual looking game full of effects and frustrations where the core mechanic is changing the gravity of the world to progress through levels.</p>
@@ -246,18 +265,6 @@
   <h2 class="section-title">Experience</h2>
   <div class="exp-list">
     <div class="exp-item">
-      <div class="exp-period">06/2024 — Present<br/><span style="color:var(--muted);font-size:0.7rem">Italy (Remote)</span></div>
-      <div>
-        <div class="exp-role">Coding Teacher</div>
-        <div class="exp-company">Coding Giants Italia</div>
-        <ul class="exp-bullets">
-          <li>Teaching children how to create video games during camps using Scratch, Minecraft Education, Tynker and MCreator</li>
-          <li>Strengthened communication skills and patience by explaining complex concepts clearly and accessibly</li>
-        </ul>
-      </div>
-    </div>
-	
-	<div class="exp-item">
       <div class="exp-period">03/2021 — Present<br/><span style="color:var(--muted);font-size:0.7rem">Australia (Remote)</span></div>
       <div>
         <div class="exp-role">UI &amp; Gameplay Developer</div>
@@ -269,7 +276,6 @@
         </ul>
       </div>
     </div>
-	
     <div class="exp-item">
       <div class="exp-period">06/2020 — 02/2021<br/><span style="color:var(--muted);font-size:0.7rem">London</span></div>
       <div>
@@ -282,7 +288,17 @@
         </ul>
       </div>
     </div>
-    
+    <div class="exp-item">
+      <div class="exp-period">06/2024 — Present<br/><span style="color:var(--muted);font-size:0.7rem">Italy (Remote)</span></div>
+      <div>
+        <div class="exp-role">Coding Teacher</div>
+        <div class="exp-company">Coding Giants Italia</div>
+        <ul class="exp-bullets">
+          <li>Teaching children how to create video games during camps using Scratch, Minecraft Education, Tynker and MCreator</li>
+          <li>Strengthened communication skills and patience by explaining complex concepts clearly and accessibly</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -407,6 +423,230 @@
   <p>© 2025 Alberto Dal Corso</p>
   <p>Computer Games Programmer · Verona, Italy</p>
 </footer>
+
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    <div class="modal-type" id="mType"></div>
+    <h2 class="modal-title" id="mTitle"></h2>
+    <div class="modal-meta" id="mMeta"></div>
+    <div id="mVideo"></div>
+    <div id="mImages"></div>
+    <div id="mConcept"></div>
+    <div id="mProduction"></div>
+    <div id="mContributions"></div>
+    <div id="mExtra"></div>
+    <div class="modal-section-title">Tech Stack</div>
+    <div class="modal-tags" id="mTags"></div>
+  </div>
+</div>
+
+<script>
+const projects = [
+  {
+    id:1, type:"Game Group Project I", title:"Octonaut",
+    year:"2020", role:"Lead Programmer", team:"University Group Project", duration:"3 months", engine:"MonoGame", language:"C#",
+    youtube:"https://youtu.be/yFxnfuM8DU4?si=0D4cpVO_B2NJjJ-3",
+    images:["media/octonaut/screen1.jpg","media/octonaut/screen2.jpg","media/octonaut/screen3.jpg","media/octonaut/screen4.jpg"],
+    concept:"Octonaut was the final year project of our course — a 2D scrolling shooter where the player uses skill to survive and complete levels. The player can dodge projectiles by moving in depth. Recently this game was released on Steam as <a href='https://store.steampowered.com/app/1035470/Takotan/' target='_blank' style='color:var(--accent)'>Takotan</a>, and is coming soon to Switch, PS Vita and Xbox.",
+    production:"Octonaut had 3 levels with a final boss at the end of level 3. As lead programmer I implemented the wave system, coded 7 different enemy types each with a unique behaviour, built the Boss, handled power-ups and collision detection, and supported teammates with their tasks.",
+    contributions:["AI programming — 7 unique enemy types + Boss","Enemy wave system","Power-ups","Collision detection","Enemy design","Lead programmer — supported full team"],
+    extra:"<div class='modal-section-title'>Released on Steam</div><p style='font-size:0.8rem;color:var(--muted);line-height:1.8'>🎮 <a href='https://store.steampowered.com/app/1035470/Takotan/' target='_blank' style='color:var(--accent)'>Takotan on Steam</a><br>Coming soon to Nintendo Switch · PS Vita · Xbox</p>",
+    tags:["MonoGame","C#","2D Shooter","AI Programming","Wave System","Steam Release"]
+  },
+  
+  {
+    id:3, type:"Game Group Project III", title:"Blood Rush",
+    year:"2020", role:"Lead Programmer", team:"University Group Project", duration:"2 months", engine:"Unreal Engine 4", language:"C++",
+    youtube:"https://youtu.be/MdW7ntQ5UyE",
+    images:["media/bloodrush/screen1.jpg","media/bloodrush/screen2.jpg","media/bloodrush/screen3.jpg","media/bloodrush/screen4.jpg","media/bloodrush/screen5.jpg"],
+    concept:"Blood Rush is a VR game made in Unreal Engine where the player must kill waves of enemies to progress to the next zone. Your ammunition is your own blood — run out of bullets and you cannot shoot for a limited time. You also carry a dagger that drains blood from enemies and a shield to deflect projectiles.",
+    production:"The team set up a fully functioning VR project with polished mechanics including a blood-draining blade and a shield system. I was lead programmer and focused on AI — building 3 entirely different enemy types — and implemented health regeneration in C++ triggered when the player runs out of ammunition.",
+    contributions:["AI programming — 3 unique enemy types with distinct behaviours","Health regeneration system (C++)","Lead programmer","Debug & testing"],
+    extra:"",
+    tags:["Unreal Engine 4","C++","VR","AI Programming","Wave System","Health System"]
+  },
+  {
+    id:4, type:"Tranzfuser 2020 — Work In Progress 🏆", title:"Leap",
+    year:"2020–2021", role:"Lead Programmer", team:"Fat Pigeon Games", duration:"Jun 2020 – Feb 2021", engine:"Unreal Engine 4", language:"C++",
+     youtube:"https://youtu.be/ZxXbFYJKvXg",
+    images:["media/leap/screen1.jpg","media/leap/screen2.jpg","media/leap/screen3.jpg","media/leap/screen4.jpg","media/leap/screen5.jpg"],
+    concept:"Leap started as part of the Jamfuser 2020 competition. Tranzfuser liked the game and decided to sponsor us for full development. Leap is an Adventure-Platformer made in Unreal Engine where the player passes levels by creating paths with a special weapon capable of placing platforms. A Leaderboard system guarantees replayability.",
+    production:"The team built polished level design alongside compelling mechanics. As lead programmer I was responsible for the health and checkpoint system, a C++ leaderboard implementation, snow and sandstorm environmental effects, overall oversight of teammates' tasks, and debug and roles management.",
+    contributions:["Health system & checkpoint system","Leaderboard system (C++)","Snow and sandstorm effects","Source control leader","Website designer","Lead programmer — overall task management","Debug & testing"],
+    extra:"<div class='modal-section-title'>Awards</div><p style='font-size:0.8rem;color:var(--muted);line-height:1.8'>🏆 Jamfuser 2020 — Winner<br>💰 Tranzfuser — Selected for funded full development</p>",
+    tags:["Unreal Engine 4","C++","Adventure-Platformer","Leaderboard","Checkpoint System","Tranzfuser","Source Control"]
+  },
+  {
+    id:5, type:"Global Game Jam 2020", title:"Antibot",
+    year:"2020", role:"Lead Programmer", team:"Apocalypse Under the Sea", duration:"3 Days", engine:"Unreal Engine 4", language:"C++",
+  youtube:"https://youtu.be/tCPDhYamHes",
+    images:["media/antibot/screen1.jpg","media/antibot/screen2.jpg","media/antibot/screen3.jpg","media/antibot/screen4.jpg"],
+    concept:"I was part of Team 'Apocalypse Under the Sea' during the Global Game Jam 2020, with the theme being 'Repair'. ANTIBOT is a puzzle-arcade game in which the player repairs infected cells before they corrupt the blood system. To succeed, the player sends a nanobot to the desired position using a horizontal and a vertical bar — a unique positional mechanic.",
+    production:"In Antibot we implemented a unique movement mechanic alongside a Score system and an HP system, both affected by how many viruses the player fixed and how many they missed. The player can also check a mini-map showing their position and the viruses' locations.",
+    contributions:["Score system & HP system","Menu system","Mini-map implementation","Lead programmer","Debug & testing"],
+    extra:"",
+    tags:["Global Game Jam","Unreal Engine 4","C++","Puzzle-Arcade","Mini-map","Co-op"]
+  },
+  {
+    id:6, type:"Ukie Green Game Jam 2019", title:"Forest Guardian",
+    year:"2019", role:"AI & UI Programmer", team:"Game Jam Team", duration:"", engine:"Unreal Engine 4", language:"C++",
+    youtube:"https://youtu.be/Q132hVQVTwg",
+    images:["media/forestguardian/screen1.jpg","media/forestguardian/screen2.jpg","media/forestguardian/screen3.jpg","media/forestguardian/screen4.jpg"],
+    concept:"I was part of the team who created 'Forest Guardian' during the Ukie Green Game Jam 2019, with the theme 'Climate Change / Sustainability'. Forest Guardian is a game where the player saves the forest by disposing of garbage using the spirit of the forest and its cub, while avoiding getting caught by hunters.",
+    production:"In Forest Guardian we implemented AI and a cub system to make the game more challenging. We also built a hide mechanic that allows the player to conceal themselves in the grass so hunters cannot spot them.",
+    contributions:["AI system — patrolling hunters with multiple states","Menu system","Debug & testing"],
+    extra:"",
+    tags:["Ukie Green Game Jam","Unreal Engine 4","C++","AI Programming","Stealth","Climate Change"]
+  },
+  {
+    id:7, type:"Westminster Game Jam 2019 — Most Appreciated ⭐", title:"Urilux",
+    year:"2019", role:"UI Programmer & Level Designer", team:"Neo Star", duration:"3 Days", engine:"Unreal Engine 4", language:"C++",
+      youtube:"https://youtu.be/L6xdhJq_ysA",
+    images:["media/urilux/screen1.jpg","media/urilux/screen2.jpg","media/urilux/screen3.jpg","media/urilux/screen4.jpg"],
+    concept:"I was part of Team Neo Star creating 'Urilux' during the University of Westminster Game Jam 2019, with the theme 'Cooperation and Collusion'. Urilux is a split-screen game where two players must cooperate to progress through levels using their lasers to overcome obstacles and open doors. The game is playable using Xbox One controllers.",
+    production:"In Urilux we implemented split-screen mechanics allowing simultaneous co-op play via Xbox One Controllers. We added a laser system so players can collaborate — or collude — during each level. The unique mechanic uses the laser to activate triggers and lighting elements.",
+    contributions:["Menu system","Level design — door system","Debug & testing"],
+    extra:"<div class='modal-section-title'>Awards</div><p style='font-size:0.8rem;color:var(--muted);line-height:1.8'>⭐ Westminster Game Jam 2019 — Most Appreciated</p>",
+    tags:["Westminster Game Jam","Unreal Engine 4","C++","Split-screen","Co-op","Xbox Controller","Laser Mechanic"]
+  },
+  {
+    id:8, type:"Ukie Game Jam 2018", title:"Top Down",
+    year:"2018", role:"UI Programmer & Level Designer", team:"OutOfMana", duration:"", engine:"Unity", language:"C#",
+    youtube:"https://youtu.be/vgXoownHg7A",
+    images:["media/topdown/screen1.jpg","media/topdown/screen2.jpg","media/topdown/screen3.jpg"],
+    concept:"TopDown is a 2D game made in Unity during the Ukie Game Jam 2018 with the topic of CHANGE. The player controls a cube by changing gravity to overcome obstacles. Since the game is intentionally difficult, dying is frequent — the block violently explodes when it hits a wall.",
+    production:"In Top Down we used post-processing effects to add glowing to dangerous walls. Motion blur and screen shake combined give a striking visual effect that fits the game's aesthetic perfectly. Background and gravity particles further complement the visual style.",
+    contributions:["UI programming","Level design","Debug & testing"],
+    extra:"",
+    tags:["Ukie Game Jam","Unity","C#","Gravity Mechanic","Post-processing","2D"]
+  }
+];
+
+function openModal(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('mType').textContent = p.type;
+  document.getElementById('mTitle').textContent = p.title;
+
+  let metaHTML = `
+    <div class="modal-meta-item">Year <span>${p.year}</span></div>
+    <div class="modal-meta-item">Team <span>${p.team}</span></div>
+    <div class="modal-meta-item">Engine <span>${p.engine}</span></div>
+    <div class="modal-meta-item">Language <span>${p.language}</span></div>
+  `;
+  if (p.duration) metaHTML += `<div class="modal-meta-item">Duration <span>${p.duration}</span></div>`;
+  document.getElementById('mMeta').innerHTML = metaHTML;
+
+  // Video
+  const videoEl = document.getElementById('mVideo');
+  if (p.youtube) {
+    const videoId = p.youtube.includes('watch?v=')
+      ? p.youtube.split('watch?v=')[1].split('&')[0]
+      : p.youtube.split('/').pop();
+    videoEl.innerHTML = `
+      <div class="modal-section-title">Gameplay Video</div>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem;border:1px solid var(--border)">
+        <iframe src="https://www.youtube.com/embed/${videoId}" title="Gameplay" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>
+      </div>`;
+  } else {
+    videoEl.innerHTML = `
+      <div class="modal-section-title">Gameplay Video</div>
+      <div style="border:1px dashed var(--border);padding:2rem;text-align:center;margin-bottom:1.5rem;font-size:0.75rem;color:var(--muted)">
+        Video coming soon — paste YouTube URL in <code style="color:var(--accent)">youtube</code> field
+      </div>`;
+  }
+
+  // Images gallery
+  const imagesEl = document.getElementById('mImages');
+  if (p.images && p.images.length) {
+    imagesEl.innerHTML = `
+      <div class="modal-section-title">Screenshots</div>
+      <div class="img-gallery">
+        ${p.images.map((src,i) => `<img src="${src}" alt="Screenshot ${i+1}" onclick="openLightbox(${p.id},${i})" loading="lazy"/>`).join('')}
+      </div>`;
+  } else {
+    imagesEl.innerHTML = '';
+  }
+
+  document.getElementById('mConcept').innerHTML = p.concept
+    ? `<div class="modal-section-title">Game Concept</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.concept}</p>`
+    : '';
+
+  document.getElementById('mProduction').innerHTML = p.production
+    ? `<div class="modal-section-title">Game Production</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.production}</p>`
+    : '';
+
+  document.getElementById('mContributions').innerHTML = p.contributions && p.contributions.length
+    ? `<div class="modal-section-title">My Contributions</div><ul style="list-style:none;margin-bottom:1rem">${p.contributions.map(c=>`<li style="font-size:0.78rem;color:var(--muted);padding:0.3rem 0 0.3rem 1.2em;position:relative"><span style="position:absolute;left:0;color:var(--accent)">→</span>${c}</li>`).join('')}</ul>`
+    : '';
+
+  document.getElementById('mExtra').innerHTML = p.extra;
+  document.getElementById('mTags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // Clear iframe to stop video playing in background
+  document.getElementById('mVideo').innerHTML = '';
+}
+
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕ Close</button>
+  <button class="lightbox-nav lightbox-prev" onclick="shiftLightbox(-1)">‹</button>
+  <img id="lightboxImg" src="" alt="Screenshot"/>
+  <button class="lightbox-nav lightbox-next" onclick="shiftLightbox(1)">›</button>
+</div>
+
+<script>
+let lbImages = [], lbIndex = 0;
+
+function openLightbox(projectId, index) {
+  const p = projects.find(x => x.id === projectId);
+  if (!p || !p.images.length) return;
+  lbImages = p.images;
+  lbIndex = index;
+  document.getElementById('lightboxImg').src = lbImages[lbIndex];
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+}
+
+function shiftLightbox(dir) {
+  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+  document.getElementById('lightboxImg').src = lbImages[lbIndex];
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLightbox();
+});
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') shiftLightbox(-1);
+  if (e.key === 'ArrowRight') shiftLightbox(1);
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
 
 </body>
 </html>
