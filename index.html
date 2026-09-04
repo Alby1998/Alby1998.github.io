@@ -191,6 +191,15 @@
   <div class="section-tag">Work</div>
   <h2 class="section-title">Projects</h2>
   <div class="projects-grid">
+    <div class="project-card" onclick="openModal(2)">
+      <div class="project-type">Personal Project · Open Source 🔧</div>
+      <h3 class="project-title">Material Studio</h3>
+      <p class="project-desc">Browser-based material assignment for architectural models. Load an ArchiCAD export, assign PBR materials to hundreds of meshes, export orthographic views plus a measured brief for an AI design chat. Three.js, no backend.</p>
+      <div class="project-tags">
+        <span class="tag">Three.js</span><span class="tag">JavaScript</span><span class="tag">WebGL</span><span class="tag">Open Source</span>
+      </div>
+      <span class="project-num">02</span>
+    </div>
     <div class="project-card" onclick="openModal(1)">
       <div class="project-type">Game Group Project I · Steam Release 🎮</div>
       <h3 class="project-title">Octonaut</h3>
@@ -457,6 +466,33 @@ const projects = [
   },
   
   {
+    id:2, type:"Personal Project — Open Source 🔧", title:"Material Studio",
+    year:"2026", role:"Solo Developer", team:"Solo", duration:"", engine:"Three.js r160", language:"JavaScript",
+    youtube:"",
+    images:["media/materialstudio/Screen1.jpg","media/materialstudio/Screen2.jpg","media/materialstudio/Screen3.jpg"],
+    conceptLabel:"Concept", productionLabel:"Implementation",
+    concept:"Material Studio is a browser-based tool that sits between CAD export and final rendering. Architectural models come out of ArchiCAD as FBX/GLB with hundreds of untextured meshes; real-time viewers like Enscape or Twinmotion are built to produce images, and AI interior-design tools are built to restyle photos. Neither produces what an LLM actually needs to reason about a space — measurements, material areas and orientation, in text. Material Studio does: you assign PBR materials on the real geometry, group meshes into a section, and export a PNG contact sheet plus a Markdown brief you can drop straight into a design chat.",
+    production:"Everything runs client-side — no install, no account, no backend, no build step. The exporter produces a plan cut at 1.6 m, four orthographic elevations and a perspective, alongside a brief with L×W×H, floor area, volume, per-material surface area with percentages, and solar context. Geographic sun uses the NOAA solar position algorithm (declination, equation of time, longitude and timezone correction), validated numerically against Verona: 67.7° at summer solstice against 68.1° expected, 21.1° against 21.2° at winter solstice. The outliner was built to survive models with many hundreds of meshes — prefix grouping, multi-word AND filtering, per-group visibility, hide/isolate/show-all. Material import is deliberately non-destructive: the scene stays visually identical until you change something.",
+    contributions:["Full architecture, design and implementation (solo)","Three.js viewport — selection outline, first-person navigation, framing","PBR material editor with texture library (PNG/JPG/WEBP/TGA decoded in-browser)","Automatic box-projected UV generation for CAD meshes exported without texture coordinates","NOAA geographic sun model, numerically validated","Six-view contact sheet + measured Markdown brief exporter","Outliner for large models — prefix grouping, AND filtering, visibility control","Undo/redo, IndexedDB autosave, live autosave to disk via File System Access API","Bilingual IT/EN runtime i18n layer"],
+    extra:`
+  <div class='modal-section-title'>Live Demo</div>
+  <p style='font-size:0.8rem;color:var(--muted);line-height:1.8'>
+  ▶ <a href='https://alby1998.github.io/material-studio/' target='_blank' style='color:var(--accent)'>
+  Try it in the browser
+  </a><br>
+  Opens on a generated 8×6 m apartment — drop in your own GLB or FBX to replace it.
+  </p>
+
+  <div class='modal-section-title'>GitHub</div>
+  <p style='font-size:0.8rem;color:var(--muted);line-height:1.8'>
+  🔗 <a href='https://github.com/Alby1998/material-studio' target='_blank' style='color:var(--accent)'>
+  Material Studio Repository
+  </a> — MIT licensed
+  </p>
+  `,
+    tags:["Three.js","JavaScript","WebGL","PBR Materials","Architectural Visualization","NOAA Solar Model","IndexedDB","i18n","Open Source"]
+  },
+  {
     id:3, type:"Game Group Project III", title:"Blood Rush",
     year:"2020", role:"Lead Programmer", team:"University Group Project", duration:"2 months", engine:"Unreal Engine 4", language:"C++",
     youtube:"https://youtu.be/MdW7ntQ5UyE",
@@ -590,6 +626,9 @@ function openModal(id) {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>
       </div>`;
+  } else if (p.youtube === "") {
+    // Explicitly no video for this project — render nothing
+    videoEl.innerHTML = '';
   } else {
     videoEl.innerHTML = `
       <div class="modal-section-title">Gameplay Video</div>
@@ -611,11 +650,11 @@ function openModal(id) {
   }
 
   document.getElementById('mConcept').innerHTML = p.concept
-    ? `<div class="modal-section-title">Game Concept</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.concept}</p>`
+    ? `<div class="modal-section-title">${p.conceptLabel || 'Game Concept'}</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.concept}</p>`
     : '';
 
   document.getElementById('mProduction').innerHTML = p.production
-    ? `<div class="modal-section-title">Game Production</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.production}</p>`
+    ? `<div class="modal-section-title">${p.productionLabel || 'Game Production'}</div><p style="font-size:0.82rem;color:var(--muted);line-height:1.9;margin-bottom:1rem">${p.production}</p>`
     : '';
 
   document.getElementById('mContributions').innerHTML = p.contributions && p.contributions.length
